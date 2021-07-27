@@ -7,6 +7,7 @@
         URL_NOT_INFORMED,
         GENERIC_ERROR,
         INVALID_ID,
-        NOT_FOUND
+        NOT_FOUND,
+        MALFORMED_URL
     }
 }

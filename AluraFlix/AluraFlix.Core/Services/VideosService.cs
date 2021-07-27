@@ -133,6 +133,15 @@ namespace AluraFlix.Core.Services
                     Description = $"Field {nameof(request.Url)} must be informed."
                 });
             }
+            else if (!(Uri.TryCreate(request.Url, UriKind.Absolute, out var uriResult)
+                    && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps)))
+            {
+                errors.Add(new ErrorResponse
+                {
+                    Code = ErrorEnum.MALFORMED_URL,
+                    Description = $"Field {nameof(request.Url)} must be a valid web address."
+                });
+            }
 
             return errors;
         }
