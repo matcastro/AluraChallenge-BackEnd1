@@ -20,10 +20,28 @@ namespace AluraFlix.Core.Services
 
         public async Task<(bool success, Video video, IList<ErrorResponse> errors)> Change(VideoUpdateRequest request)
         {
-            var errors = ValidateVideoRequest(request);
-            errors.AddRange(ValidateId(request.Id));
+            
+            var errors = ValidateId(request.Id);
             
             if(errors.Count > 0)
+            {
+                return (false, null, errors);
+            }
+
+            var (successFind, foundVideo, errorsFind) = await Find(request.Id);
+
+            if (!successFind)
+            {
+                return (false, null, errorsFind);
+            }
+            
+            request.Titulo = string.IsNullOrWhiteSpace(request.Titulo) ? foundVideo.Titulo : request.Titulo;
+            request.Descricao = string.IsNullOrWhiteSpace(request.Descricao) ? foundVideo.Descricao : request.Descricao;
+            request.Url = string.IsNullOrWhiteSpace(request.Url) ? foundVideo.Url : request.Url;
+            request.CategoriaId = request.CategoriaId == 0 ? foundVideo.CategoriaId : request.CategoriaId;
+
+            errors.AddRange(ValidateVideoRequest(request));
+            if (errors.Count > 0)
             {
                 return (false, null, errors);
             }
@@ -91,6 +109,12 @@ namespace AluraFlix.Core.Services
             {
                 return (false, null, errors);
             }
+
+            if(request.CategoriaId <= 0)
+            {
+                request.CategoriaId = 1;
+            }
+
             var (success, video) = await _videosRepository.Register(request);
 
             if (!success)

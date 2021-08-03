@@ -23,7 +23,7 @@ namespace AluraFlix.Core.Repositories
             var video = new Video();
             var success = false;
             var query = "UPDATE VIDEOS " +
-                "SET TITULO = @titulo, DESCRICAO = @descricao, URL = @url " +
+                "SET TITULO = @titulo, DESCRICAO = @descricao, URL = @url, CATEGORIAID = @categoriaId " +
                 "WHERE ID = @id";
             using (var conn = new SqlConnection(_config.Database.ConnectionString))
             {
@@ -31,6 +31,7 @@ namespace AluraFlix.Core.Repositories
                 command.Parameters.AddWithValue("@titulo", request.Titulo);
                 command.Parameters.AddWithValue("@descricao", request.Descricao);
                 command.Parameters.AddWithValue("@url", request.Url);
+                command.Parameters.AddWithValue("@categoriaId", request.CategoriaId);
                 command.Parameters.AddWithValue("@id", request.Id);
                 try
                 {
@@ -44,6 +45,7 @@ namespace AluraFlix.Core.Repositories
                     video.Titulo = request.Titulo;
                     video.Descricao = request.Descricao;
                     video.Url = request.Url;
+                    video.CategoriaId = request.CategoriaId;
                 }
                 catch (Exception ex)
                 {
@@ -83,7 +85,7 @@ namespace AluraFlix.Core.Repositories
         public async Task<Video> Find(long id)
         {
             var video = new Video();
-            var query = "SELECT ID, TITULO, DESCRICAO, URL " +
+            var query = "SELECT ID, TITULO, DESCRICAO, URL, CATEGORIAID " +
                 "FROM VIDEOS " +
                 "WHERE ID = @id";
             using (var conn = new SqlConnection(_config.Database.ConnectionString))
@@ -100,6 +102,7 @@ namespace AluraFlix.Core.Repositories
                         video.Titulo = reader.GetString(1);
                         video.Descricao = reader.GetString(2);
                         video.Url = reader.GetString(3);
+                        video.CategoriaId = reader.GetInt32(4);
                     }
                     reader.Close();
                 }
@@ -114,8 +117,8 @@ namespace AluraFlix.Core.Repositories
         public async Task<IList<Video>> ListAll()
         {
             var videos = new List<Video>();
-            var query = "SELECT ID, TITULO, DESCRICAO, URL" +
-                " FROM VIDEOS";
+            var query = "SELECT ID, TITULO, DESCRICAO, URL, CATEGORIAID " +
+                "FROM VIDEOS";
             using (var conn = new SqlConnection(_config.Database.ConnectionString))
             {
                 var command = new SqlCommand(query, conn);
@@ -131,7 +134,8 @@ namespace AluraFlix.Core.Repositories
                             Id = reader.GetInt32(0),
                             Titulo = reader.GetString(1),
                             Descricao = reader.GetString(2),
-                            Url = reader.GetString(3)
+                            Url = reader.GetString(3),
+                            CategoriaId = reader.GetInt32(4),
                         };
 
                         videos.Add(video);
@@ -150,14 +154,15 @@ namespace AluraFlix.Core.Repositories
         {
             var video = new Video();
             var success = false;
-            var query = "INSERT INTO VIDEOS (TITULO, DESCRICAO, URL) OUTPUT INSERTED.ID " +
-                "VALUES (@titulo, @descricao, @url)";
+            var query = "INSERT INTO VIDEOS (TITULO, DESCRICAO, URL, CATEGORIAID) OUTPUT INSERTED.ID " +
+                "VALUES (@titulo, @descricao, @url, @categoriaId)";
             using (var conn = new SqlConnection(_config.Database.ConnectionString))
             {
                 var command = new SqlCommand(query, conn);
                 command.Parameters.AddWithValue("@titulo", request.Titulo);
                 command.Parameters.AddWithValue("@descricao", request.Descricao);
                 command.Parameters.AddWithValue("@url", request.Url);
+                command.Parameters.AddWithValue("@categoriaId", request.CategoriaId);
                 try
                 {
                     conn.Open();
@@ -170,6 +175,7 @@ namespace AluraFlix.Core.Repositories
                     video.Titulo = request.Titulo;
                     video.Descricao = request.Descricao;
                     video.Url = request.Url;
+                    video.CategoriaId = request.CategoriaId;
                 }
                 catch (Exception ex)
                 {
