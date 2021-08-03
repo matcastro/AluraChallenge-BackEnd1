@@ -12,5 +12,6 @@ namespace AluraFlix.Core.Repositories.Interfaces
         Task<bool> Delete(long id);
         Task<(bool success, Video video)> Change(VideoUpdateRequest request);
         Task<(bool success, Video video)> Register(VideoRequest request);
+        Task<IList<Video>> FindByCategoriaId(long id);
     }
 }

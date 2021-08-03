@@ -12,10 +12,13 @@ namespace AluraFlix.Core.Services
     public class CategoriasService : ICategoriasService
     {
         private readonly ICategoriasRepository _categoriasRepository;
+        private readonly IVideosRepository _videosRepository;
 
-        public CategoriasService(ICategoriasRepository categoriasRepository)
+        public CategoriasService(ICategoriasRepository categoriasRepository,
+            IVideosRepository videosRepository)
         {
             _categoriasRepository = categoriasRepository;
+            _videosRepository = videosRepository;
         }
 
         public async Task<(bool success, Categoria categoria, IList<ErrorResponse> errors)> Change(CategoriaUpdateRequest request)
@@ -67,8 +70,8 @@ namespace AluraFlix.Core.Services
             {
                 return (false, null, errors);
             }
-            var video = await _categoriasRepository.Find(id);
-            if (video.Id == 0)
+            var categoria = await _categoriasRepository.Find(id);
+            if (categoria.Id == 0)
             {
                 errors.Add(new ErrorResponse
                 {
@@ -76,7 +79,7 @@ namespace AluraFlix.Core.Services
                     Description = $"Video {id} not found."
                 });
             }
-            return (!(video.Id == 0), video, errors);
+            return (!(categoria.Id == 0), categoria, errors);
         }
 
         public async Task<IList<Categoria>> ListAll()
@@ -102,6 +105,29 @@ namespace AluraFlix.Core.Services
                 });
             }
             return (true, video, errors);
+        }
+
+        public async Task<(bool success, IList<Video> videos, IList<ErrorResponse> errors)> FindVideos(long id)
+        {
+            var errors = ValidateId(id);
+            if (errors.Count > 0)
+            {
+                return (false, null, errors);
+            }
+            var videos = await _videosRepository.FindByCategoriaId(id);
+            
+            if(videos.Count > 0)
+            {
+                return (true, videos, null);
+            }
+            else
+            {
+                return (false, videos, new List<ErrorResponse> { new ErrorResponse
+                {
+                    Code = ErrorEnum.NOT_FOUND,
+                    Description = $"No videos found for the category {id}"
+                } });
+            }
         }
 
         private List<ErrorResponse> ValidateId(long id)

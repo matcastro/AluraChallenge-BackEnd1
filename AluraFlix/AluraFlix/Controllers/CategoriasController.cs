@@ -54,6 +54,34 @@ namespace AluraFlix.Controllers
             }
         }
 
+        [Route("{id}/videos")]
+        [HttpGet]
+        public async Task<IActionResult> FindVideos([FromRoute] long id)
+        {
+            try
+            {
+                var (success, categoria, errors) = await _categoriasService.FindVideos(id);
+                if (success)
+                {
+                    return Ok(categoria);
+                }
+                else
+                {
+                    return BadRequest(errors);
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, new List<ErrorResponse>{
+                    new ErrorResponse
+                    {
+                        Code = ErrorEnum.GENERIC_ERROR,
+                        Description = "An unexpected error has occurred."
+                    }
+                });
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] CategoriaRequest request)
         {

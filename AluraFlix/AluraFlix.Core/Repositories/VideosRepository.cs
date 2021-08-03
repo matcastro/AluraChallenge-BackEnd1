@@ -114,6 +114,44 @@ namespace AluraFlix.Core.Repositories
             return video;
         }
 
+        public async Task<IList<Video>> FindByCategoriaId(long id)
+        {
+            var videos = new List<Video>();
+            var query = "SELECT ID, TITULO, DESCRICAO, URL, CATEGORIAID " +
+                "FROM VIDEOS " +
+                "WHERE CATEGORIAID = @id";
+            using (var conn = new SqlConnection(_config.Database.ConnectionString))
+            {
+                var command = new SqlCommand(query, conn);
+                command.Parameters.AddWithValue("@id", id);
+
+                try
+                {
+                    conn.Open();
+                    SqlDataReader reader = await command.ExecuteReaderAsync();
+                    while (reader.Read())
+                    {
+                        var video = new Video
+                        {
+                            Id = reader.GetInt32(0),
+                            Titulo = reader.GetString(1),
+                            Descricao = reader.GetString(2),
+                            Url = reader.GetString(3),
+                            CategoriaId = reader.GetInt32(4),
+                        };
+
+                        videos.Add(video);
+                    }
+                    reader.Close();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+            return videos;
+        }
+
         public async Task<IList<Video>> ListAll()
         {
             var videos = new List<Video>();

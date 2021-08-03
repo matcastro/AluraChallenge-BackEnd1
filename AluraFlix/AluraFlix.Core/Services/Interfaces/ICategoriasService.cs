@@ -13,5 +13,6 @@ namespace AluraFlix.Core.Services.Interfaces
         Task<(bool success, Categoria categoria, IList<ErrorResponse> errors)> Register(CategoriaRequest request);
         Task<(bool success, Categoria categoria, IList<ErrorResponse> errors)> Change(CategoriaUpdateRequest request);
         Task<(bool success, IList<ErrorResponse> errors)> Delete(long id);
+        Task<(bool success, IList<Video> videos, IList<ErrorResponse> errors)> FindVideos(long id);
     }
 }
