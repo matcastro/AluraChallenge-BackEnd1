@@ -23,8 +23,10 @@ namespace AluraFlix
             services.AddControllers();
 
             services.AddSingleton<IVideosService, VideosService>();
+            services.AddSingleton<ICategoriasService, CategoriasService>();
 
             services.AddSingleton<IVideosRepository, VideosRepository>();
+            services.AddSingleton<ICategoriasRepository, CategoriasRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

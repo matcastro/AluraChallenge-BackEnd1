@@ -8,6 +8,7 @@
         GENERIC_ERROR,
         INVALID_ID,
         NOT_FOUND,
-        MALFORMED_URL
+        MALFORMED_URL,
+        COLOR_NOT_INFORMED
     }
 }
