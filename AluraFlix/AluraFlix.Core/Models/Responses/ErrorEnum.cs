@@ -9,6 +9,7 @@
         INVALID_ID,
         NOT_FOUND,
         MALFORMED_URL,
-        COLOR_NOT_INFORMED
+        COLOR_NOT_INFORMED,
+        SEARCH_PARAMETER_NOT_INFORMED
     }
 }

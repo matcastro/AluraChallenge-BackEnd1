@@ -128,6 +128,35 @@ namespace AluraFlix.Core.Services
             return (true, video, errors);
         }
 
+        public async Task<(bool success, IList<Video> video, IList<ErrorResponse> errors)> Search(string search)
+        {
+            var errors = new List<ErrorResponse>();
+            if (string.IsNullOrWhiteSpace(search))
+            {
+                errors.Add(new ErrorResponse
+                {
+                    Code = ErrorEnum.SEARCH_PARAMETER_NOT_INFORMED,
+                    Description = "Search parameter should not be empty."
+                });
+            }
+
+            if(errors.Count > 0)
+            {
+                return (false, null, errors);
+            }
+
+            var videos = await _videosRepository.Search(search);
+            if (videos.Count == 0)
+            {
+                errors.Add(new ErrorResponse
+                {
+                    Code = ErrorEnum.NOT_FOUND,
+                    Description = $"No videos found for search string {search}."
+                });
+            }
+            return (!(videos.Count == 0), videos, errors);
+        }
+
         private List<ErrorResponse> ValidateVideoRequest(VideoRequest request)
         {
             var errors = new List<ErrorResponse>();

@@ -21,7 +21,16 @@ namespace AluraFlix.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ListAll()
+        public async Task<IActionResult> Get([FromQuery] string search)
+        {
+            if(search != null)
+            {
+                return await Search(search);
+            }
+            return await ListAll();
+        }
+
+        private async Task<IActionResult> ListAll()
         {
             return Ok(await _videosService.ListAll());
         }
@@ -118,6 +127,32 @@ namespace AluraFlix.Controllers
                 if (success)
                 {
                     return Ok();
+                }
+                else
+                {
+                    return BadRequest(errors);
+                }
+            }
+            catch (Exception)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, new List<ErrorResponse>{
+                    new ErrorResponse
+                    {
+                        Code = ErrorEnum.GENERIC_ERROR,
+                        Description = "An unexpected error has occurred."
+                    }
+                });
+            }
+        }
+
+        private async Task<IActionResult> Search(string search)
+        {
+            try
+            {
+                var (success, videos, errors) = await _videosService.Search(search);
+                if (success)
+                {
+                    return Ok(videos);
                 }
                 else
                 {
